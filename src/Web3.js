@@ -1,51 +1,52 @@
-import abi from './abi/abi.json' assert{type: "json"};
-import Web3 from 'web3';
+import abi from "./abi/abi.json" assert {type: "json"};
 
-//sc = 0xC57e15c7194E1D7bDF0187E7648357D395a406C1
+// SC: 0x757E42b6BeFd38E4a1AD998b2bC3C079220F8dF4
 
 const blockchain = new Promise((res, rej) => {
-    //if metamask is available
+
+    // If Metamask is not available
     if(typeof window.ethereum == "undefined"){
-        rej("You should install metamask to use it");
+        rej("You should install Metamask to use it!");
     }
 
-    //Web3 Instance
+    // Web3 Instance 
     let web3 = new Web3(window.ethereum);
-    let contract = new web3.eth.Contract(abi, '0xC57e15c7194E1D7bDF0187E7648357D395a406C1');
+    let contract = new web3.eth.Contract(abi, "0x757E42b6BeFd38E4a1AD998b2bC3C079220F8dF4");
 
     // Get my Metamask address
-    web3.eth.getAccounts().then((accounts) =>{
-        console.log("My account: ", accounts[0])
+    web3.eth.requestAccounts().then((accounts) =>{
+        console.log("-> My account is: ", accounts[0]);
     });
 
-    // Get the current supply of NFT tokens
-    web3.eth.getAccounts().then((accounts) =>{
+    // Get the current supply of NFT Tokens
+    web3.eth.requestAccounts().then((accounts) =>{
         contract.methods.totalSupply().call({from: accounts[0]}).then((supply) =>{
-            console.log("Current supply: ", supply)
-        })
+            console.log("-> Current supply of NFT Tokens is: ", supply);
+        });
     });
 
-    // Get the maximum supply of NFT tokens
-    web3.eth.getAccounts().then((accounts) =>{
+    // Get the Maximum supply of NFT Tokens
+    web3.eth.requestAccounts().then((accounts) =>{
         contract.methods.maxSupply().call({from: accounts[0]}).then((maxsupply) =>{
-            console.log("Max supply: ", maxsupply)
-        })
+            console.log("-> Maximum supply of NFT Tokens is: ", maxsupply);
+        });
     });
 
     // Get your buildings made in the Metaverse
-    web3.eth.getAccounts().then((accounts) =>{
+    web3.eth.requestAccounts().then((accounts) =>{
         contract.methods.getOwnerBuildings().call({from: accounts[0]}).then((buildings) =>{
-            console.log("Your buildings: ", buildings)
-        })
+            console.log("-> Your buildings: ", buildings);
+        });
     });
 
-
-    //get all the buildings made in the Metaverse
-    web3.eth.getAccounts().then((accounts) =>{
-        contract.methods.totalSupply().call({from: accounts[0]}).then((buildings) => {
-
-        })
+    // Get all the buildings made in the Metaverse 
+    web3.eth.requestAccounts().then((accounts) =>{
+        contract.methods.totalSupply().call({from: accounts[0]}).then((supply) =>{
+            contract.methods.getBuildings().call({from: accounts[0]}).then((data) => {
+                res({supply: supply, building: data });
+            });
+        });
     });
+});
 
-
-})
+export default blockchain;
